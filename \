@@ -1,0 +1,81 @@
+import React, { useState, useRef } from "react";
+//import logo from "./logo.svg";
+import Popup from "reactjs-popup";
+import SignaturePad from "react-signature-canvas";
+import "./App.css";
+import "./sigCanvas.css";
+
+function App() {
+  const [imageURL, setImageURL] = useState(null);
+  const sigCanvas = useRef({});
+  const clear = () => sigCanvas.current.clear();
+  const save = () => {
+    setImageURL(sigCanvas.current.getTrimmedCanvas().toDataURL("image/png"));
+  };
+  function mydownload(imageurl) {
+    var img = document.getElementById("imgurl");
+
+    var canvas = document.getElementById("canvas");
+    var ctx = canvas.getContext("2d");
+
+    canvas.width = img.width;
+    canvas.height = img.height;
+
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    var a = document.createElement("a");
+    a.href = canvas.toDataURL("image/png");
+    a.download = "sample.jpg";
+    document.body.appendChild(a);
+    a.click();
+  }
+  return (
+    <div className="App">
+      <header className="App-header">
+
+          <Popup
+            modal
+            trigger={<button> Open Signature Pad</button>}
+            closeOnDocumentClick={false}>
+            {(close) => (
+              <>
+                <SignaturePad penColor='red'
+                  ref={sigCanvas} //pass our ref into signature component
+                  canvasProps={{
+                    className: "signatureCanvas",
+                  }}
+                />
+                <button onClick={save}>save</button>
+                <button onClick={clear}>clear</button>
+                <button onClick={close}>close</button>
+              </>
+            )}
+          </Popup>
+          {imageURL ? (
+            <>
+              {" "}
+              <img
+                src={imageURL}
+                id="imgurl"
+                alt="my signature"
+                style={{
+                  display: "block",
+                  margin: "0 auto",
+                  border: "1px solid black",
+                  background: "white",
+                  width: "50px",
+                }}
+              />
+              <br />
+              <button onClick={() => mydownload(imageURL)}>download</button>
+              <canvas id="canvas">
+                Sorry. Your browser does not support HTML5 canvas element.
+              </canvas>
+            </>
+          ) : null}
+
+      </header>
+    </div>
+  );
+}
+
+export default App;
